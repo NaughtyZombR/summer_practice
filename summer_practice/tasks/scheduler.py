@@ -18,7 +18,7 @@ app = Rocketry()
 
 
 # Запуск в отдельном потоке. Повторять каждые четыре часа, с момента запуска (Изначально выключено)
-@app.task(every("4 hours"), execution="thread", disabled=False)
+@app.task(every("4 hours"), execution="thread", disabled=True)
 async def do_parse_data_from_aliexpress(flag=TerminationFlag()):
     """Получает данные с мирового интернет-магазина AliExpress, посредстом парсинга всей страницы.
     Взаимодейтсвие с API в стадии разработки (код закомментирован)."""
