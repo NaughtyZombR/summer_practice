@@ -7,7 +7,6 @@ import sys
 
 sys.path.append(os.path.abspath("./summer_practice"))
 
-
 import asyncio
 import logging
 

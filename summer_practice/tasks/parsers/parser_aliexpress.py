@@ -191,7 +191,8 @@ def _parse_aliexpress_page(page_number: int = 1, proxy: str = '') -> list[dict] 
             product_title_raw = product_desc_div.find("div",
                                                       {"class": re.compile('^product-snippet_ProductSnippet__name.*')})
             product_rating_raw = product_desc_div.find("div",
-                                                       {"class": re.compile('^product-snippet_ProductSnippet.*')})
+                                                       {"class":
+                                                        re.compile('^product-snippet_ProductSnippet__score.*')})
             product_bought_raw = product_desc_div.find("div",
                                                        {"class": re.compile('^product-snippet_ProductSnippet__sold.*')})
             product_price_raw = product_desc_div.find("div",
@@ -205,15 +206,17 @@ def _parse_aliexpress_page(page_number: int = 1, proxy: str = '') -> list[dict] 
             product_price = product_price_raw.text if product_price_raw is not None else ""
 
             current_price = float(product_price.replace(" ", "").replace(',', '.')[:-1])
+            current_rating = product_rating.replace(',', '.')
+            current_bought = re.sub('[^0-9]', '', product_bought)
 
             result.append(
                 {
                     'title': product_title,
                     'price': current_price,
-                    'rating': product_rating,
-                    'bought': product_bought,
-                    'url': product_url,
-                    'picture': product_image
+                    'rating': float(current_rating) if current_rating else None,
+                    'bought': int(current_bought) if current_bought.isdigit() else None,
+                    'url': "https:"+product_url,
+                    'picture': "https:"+product_image
                 }
             )
 
@@ -228,36 +231,30 @@ def _parse_aliexpress_page(page_number: int = 1, proxy: str = '') -> list[dict] 
 
 
 def parse_aliexpress(start_page: int = 1, total_pages: int = 1, use_proxies: bool = False) -> list[dict] | None:
-    # proxies: list[str] | None = None
-
     is_proxies_list_empty = False
-    is_need_new_proxy = False
-    proxies = list()
-    proxy = ""
-
     if use_proxies:
         proxies = get_proxies(PATH_TO_FOLDER() + HTTPS_PROXIES_GOOD_FILENAME)
-        is_need_new_proxy = True
 
+    current_proxy_index = 0 if use_proxies else None  # Индекс текущего используемого прокси
     for page_number in range(start_page, total_pages + 1):
+        if use_proxies:
+            if current_proxy_index >= len(proxies):
+                current_proxy_index = 0
+
         while not is_proxies_list_empty:
+            proxy = None if not use_proxies or current_proxy_index is None else proxies[current_proxy_index]
 
-            if is_need_new_proxy and use_proxies:
-                try:
-                    proxy = proxies.pop()
-                    is_need_new_proxy = False
-                except IndexError:
-                    is_proxies_list_empty = True
-                    break
-
+            print(f"{proxy} (page {page_number})")
             data = _parse_aliexpress_page(page_number, proxy)
 
             if data:
                 yield data
-                time.sleep(5)  # Вынужденная мера, для того, чтобы слишком быстро не отлетали прокси
-                break
+                time.sleep(5)  # Вынужденная мера, чтобы слишком быстро не отлетали прокси
+                if use_proxies:
+                    current_proxy_index += 1
+                    break
             elif use_proxies:
-                is_need_new_proxy = True
+                proxies.pop(current_proxy_index)
             else:
                 break
 

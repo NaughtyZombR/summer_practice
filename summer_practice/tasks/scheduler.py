@@ -56,10 +56,10 @@ async def do_parse_data_from_aliexpress(flag=TerminationFlag()):
                         continue
 
                     print(f"Продукт '{title}' с таким url уже существует. Обновляю данные.")
-                    update_object(db=db, model=db_product, schema=schemas.BookBase(**product_dict))
+                    update_object(db=db, model=db_product, schema=schemas.AliexpressProductBase(**product_dict))
                     continue
 
-                product_schem = schemas.ProductCreate(**product_dict)
+                product_schem = schemas.AliexpressProductCreate(**product_dict)
                 if crud.create_object(db, model=models.Product, schema=product_schem, store=store):
                     sys.stdout.write(f"Продукт '{title}' успешно добавлен." + '\n')
                     sys.stdout.flush()
