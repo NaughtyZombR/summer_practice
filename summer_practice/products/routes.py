@@ -35,7 +35,8 @@ async def get_store(store_id: int, limit_items: int = 20, db: Session = Depends(
 
     limit_items = min(max(limit_items, 1), 50)  # Ограничение в минимум 1 и максимум 50 товаров в информации о магазине
 
-    store_dict = store.dict()  # Преобразуем объект store в словарь
+    store_dict = schemas.Store.from_orm(store).dict()  # Преобразуем объект store в словарь
+
     store_dict["items"] = store.items[:limit_items]  # Заменяем поле items
 
     limited_store = schemas.SingleStoreResponse(**store_dict)  # Создаем новый объект с модифицированными данными
