@@ -17,8 +17,8 @@ from summer_practice.tasks.proxies.config import PATH_TO_FOLDER, HTTP_PROXIES_RA
 app = Rocketry()
 
 
-# Запуск в отдельном потоке. Повторять каждые четыре часа, с момента запуска (Изначально выключено)
-@app.task(every("4 hours"), execution="thread", disabled=True)
+# Запуск в отдельном потоке. Повторять каждые 6 часов, с момента запуска (Изначально выключено)
+@app.task(every("6 hours"), execution="thread", disabled=True)
 async def do_parse_data_from_aliexpress(flag=TerminationFlag()):
     """Получает данные с мирового интернет-магазина AliExpress, посредстом парсинга всей страницы.
     Взаимодейтсвие с API в стадии разработки (код закомментирован)."""
@@ -65,7 +65,7 @@ async def do_parse_data_from_aliexpress(flag=TerminationFlag()):
                     sys.stdout.flush()
 
 
-# Запуск в отдельном потоке. Повторять каждые четыре часа, с момента запуска (Изначально выключено)
+# Запуск в отдельном потоке. Повторять каждые 6 часа, с момента запуска (Изначально выключено)
 @app.task(every("6 hours"), execution="thread", disabled=True)
 async def do_parse_data_from_chitai_gorod(flag=TerminationFlag()):
     """Использует API интернет-магазина Читай-Город, который был выявлен посредстом узучения кода скриптов и запросов"""
@@ -103,7 +103,7 @@ async def do_parse_data_from_chitai_gorod(flag=TerminationFlag()):
                 sys.stdout.flush()
 
 
-# Запуск в отдельном потоке. Повторять каждые четыре часа, с момента запуска (Изначально выключено)
+# Запуск в отдельном потоке. Повторять каждый час, с момента запуска (Изначально выключено)
 @app.task(every("1 hours"), execution="thread", disabled=True)
 async def do_proxy_processes(flag=TerminationFlag()):
     """Изначально получает небольшой список публичных прокси (proxy_leecher), а затем производит их валидацию,
