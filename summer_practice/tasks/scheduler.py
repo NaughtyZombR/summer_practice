@@ -39,7 +39,7 @@ async def do_parse_data_from_aliexpress(flag=TerminationFlag()):
                     raise TaskTerminationException()
 
                 title = product_dict['title']
-                _len = 15
+                _len = 30
                 if len(title) >= _len:
                     last_space_index = title[:_len + 1].rfind(' ')
                     if last_space_index != -1:

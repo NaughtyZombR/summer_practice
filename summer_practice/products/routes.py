@@ -28,12 +28,19 @@ async def read_stores(offset: int = 0, limit: int = 100, db: Session = Depends(g
 
 
 @router_stores.get("/show/{store_id}/", response_model=schemas.SingleStoreResponse)
-async def get_store(store_id: int, db: Session = Depends(get_db)):
+async def get_store(store_id: int, limit_items: int = 20, db: Session = Depends(get_db)):
     store = crud.get_object_by_id(db=db, model=models.Store, obj_id=store_id)
     if not store:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Store not found")
 
-    return store
+    limit_items = min(max(limit_items, 1), 50)  # Ограничение в минимум 1 и максимум 50 товаров в информации о магазине
+
+    store_dict = store.dict()  # Преобразуем объект store в словарь
+    store_dict["items"] = store.items[:limit_items]  # Заменяем поле items
+
+    limited_store = schemas.SingleStoreResponse(**store_dict)  # Создаем новый объект с модифицированными данными
+
+    return limited_store
 
 
 @router_stores.put("/update/{store_id}", response_model=schemas.Store)
