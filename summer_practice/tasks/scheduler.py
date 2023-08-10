@@ -31,7 +31,7 @@ async def do_parse_data_from_aliexpress(flag=TerminationFlag()):
                                                items_model="Product")
             store = create_object(db=db, model=models.Store, schema=store_schema)
 
-        for products_dict in parse_aliexpress(1, 20,
+        for products_dict in parse_aliexpress(1, 150,
                                               use_proxies=True):  # Пока что не реализован автоматический подсчёт страниц
             for product_dict in products_dict:
                 # Проверка, если задача была принудительно завершена.
